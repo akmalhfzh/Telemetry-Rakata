@@ -3,18 +3,32 @@
 #include "SPI.h"
 #include <movingAvg.h>
 
-#define VIN 33 // define the Arduino pin A0 as voltage input (V in)
+#define VIN 33
+#define VDIN 15
 const int thermistorPin = 34; // Hubungkan thermistor ke pin analog A0
+
 const float resistorValue = 10000.0; // Nilai resistor (10k)
 const float nominalResistance = 10000.0; // Nilai resistansi pada suhu tertentu (biasanya 25°C)
 const float nominalTemperature = 25.0; // Suhu nominal dalam derajat Celsius
 const float betaCoefficient = 3950; // Koefisien Beta dari termistor
 
-const float VCC = 5.0; // supply voltage 5V or 3.3V. If using PCB, set to 5V only.
+const float VCC = 5.0; 
 const int model = 0;    // enter the model (see below)
 float rawvoltage;
 movingAvg avgCurr(10);  
+movingAvg avgTemp(10);
+movingAvg avgVol(10);
 float cutOffLimit = 1.00; // reading cutt off current. 1.00 is 1 Ampere
+
+// Floats for ADC voltage & Input voltage
+float adc_voltage = 0.0;
+float in_voltage = 0.0;
+// Floats for resistor values in divider (in ohms)
+float R1 = 45000.0;
+float R2 = 5000.0; 
+// Integer for ADC value
+int adc_value = 0;
+
 
 float sensitivity[] = {
     40.0, // for ACS758LCB-050B
@@ -68,6 +82,10 @@ void setup() {
 
   // Inisialisasi sensor arus
   avgCurr.begin();
+  // Inisialisasi sensor suhu
+  avgTemp.begin();
+  // Inisialisasi sensor tegangan
+  avgVol.begin();
 }
 
 void loop() {
@@ -82,14 +100,21 @@ void loop() {
   steinhart += 1.0 / (nominalTemperature + 273.15); // + (1/To)
   steinhart = 1.0 / steinhart;                 // Invert
   steinhart -= 273.15;                         // Konversi dari Kelvin ke Celsius
+  float avgtemp = avgTemp.reading(steinhart);
   
   // Baca nilai arus
   rawvoltage = analogRead(VIN);
   float voltage_raw = (5.0 / 4095.0) * analogRead(VIN); // diganti nanti make 4095 karena 12 bit
   voltage = voltage_raw - QOV - 0.77;
   float current = voltage / FACTOR;
-  float avg = avgCurr.reading(current); 
+  float avgcurr = avgCurr.reading(current); 
 
+  // Baca nilai tegangan
+  adc_value = analogRead(VDIN);
+  adc_voltage  = (adc_value * VCC) /4095.0; 
+  in_voltage = adc_voltage / (R2/(R1+R2)) ; 
+  float avgvol = avgVol.reading(in_voltage); 
+    
   // Open file for appending
   dataFile = SD.open("/data.csv", FILE_APPEND);
   if(!dataFile) {
@@ -103,9 +128,11 @@ void loop() {
   // Write data to file
   dataFile.print(currentTime);
   dataFile.print(",");
-  dataFile.print(steinhart);
+  dataFile.print(avgtemp);
   dataFile.print(",");
-  dataFile.println(avg);
+  dataFile.println(avgcurr);
+  datafile.print(",");
+  datafile.println(avgvol);
 
   // Close file
   dataFile.close();
@@ -114,10 +141,12 @@ void loop() {
   Serial.print("Waktu: ");
   Serial.print(currentTime);
   Serial.print(", Suhu: ");
-  Serial.print(steinhart);
+  Serial.print(avgtemp);
   Serial.print(" °C, Arus: ");
-  Serial.print(avg);
+  Serial.print(avgcurr);
   Serial.println(" A");
+  serial.print(avgvol);
+  serial.println(" V");
 
-  delay(1000); // Tunda selama 1 detik
+  delay(200); 
 }
