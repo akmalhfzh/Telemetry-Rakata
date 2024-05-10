@@ -6,8 +6,8 @@ float adc_voltage = 0.0;
 float in_voltage = 0.0;
  
 // Floats for resistor values in divider (in ohms)
-float R1 = 30000.0;
-float R2 = 7500.0; 
+float R1 = 45000.0;
+float R2 = 5000.0; 
  
 // Float for Reference Voltage
 float ref_voltage = 5.0;
