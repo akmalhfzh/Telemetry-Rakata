@@ -146,7 +146,7 @@ void loop() {
   dataFile.print(",");
   dataFile.println(avgvol);
   dataFile.print(",");
-  dataFile.Println(power);
+  dataFile.println(power);
 
   // Close file
   dataFile.close();
