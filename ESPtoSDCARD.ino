@@ -5,7 +5,13 @@
 
 #define VIN 33
 #define VDIN 15
-const int thermistorPin = 34; // Hubungkan thermistor ke pin analog A0
+const int thermistorPin = 34;
+
+// Variabel untuk menyimpan nilai daya sebelumnya
+float prevPower = 0.0;
+
+// Deklarasi fungsi
+void saveDataToCSV(float time, float temperature, float current, float voltage, float power);
 
 const float resistorValue = 10000.0; // Nilai resistor (10k)
 const float nominalResistance = 10000.0; // Nilai resistansi pada suhu tertentu (biasanya 25°C)
@@ -114,6 +120,12 @@ void loop() {
   adc_voltage  = (adc_value * VCC) /4095.0; 
   in_voltage = adc_voltage / (R2/(R1+R2)) ; 
   float avgvol = avgVol.reading(in_voltage); 
+
+  // Hitung daya
+  float power = avgvol * avgcurr;
+
+  // Akumulasi nilai daya sebelumnya dengan nilai daya baru
+  power += prevPower;
     
   // Open file for appending
   dataFile = SD.open("/data.csv", FILE_APPEND);
@@ -131,8 +143,10 @@ void loop() {
   dataFile.print(avgtemp);
   dataFile.print(",");
   dataFile.println(avgcurr);
-  datafile.print(",");
-  datafile.println(avgvol);
+  dataFile.print(",");
+  dataFile.println(avgvol);
+  dataFile.print(",");
+  dataFile.Println(power);
 
   // Close file
   dataFile.close();
@@ -145,8 +159,10 @@ void loop() {
   Serial.print(" °C, Arus: ");
   Serial.print(avgcurr);
   Serial.println(" A");
-  serial.print(avgvol);
-  serial.println(" V");
+  Serial.print(avgvol);
+  Serial.println(" V");
+  Serial.print(power);
+  Serial.println(" W");
 
   delay(200); 
 }
