@@ -30,7 +30,7 @@ void loop(){
    adc_voltage  = (adc_value * ref_voltage) /4095.0; 
    
    // Calculate voltage at divider input
-   in_voltage = adc_voltage / (R2/(R1+R2)) ; 
+   in_voltage = adc_voltage *((R2+R1)/R2); 
    
    // Print results to Serial Monitor to 2 decimal places
   Serial.print("Input Voltage = ");
