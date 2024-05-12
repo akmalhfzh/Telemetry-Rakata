@@ -142,9 +142,9 @@ void loop() {
   dataFile.print(",");
   dataFile.print(avgtemp);
   dataFile.print(",");
-  dataFile.println(avgcurr);
+  dataFile.print(avgcurr);
   dataFile.print(",");
-  dataFile.println(avgvol);
+  dataFile.print(avgvol);
   dataFile.print(",");
   dataFile.println(power);
 
@@ -158,9 +158,9 @@ void loop() {
   Serial.print(avgtemp);
   Serial.print(" °C, Arus: ");
   Serial.print(avgcurr);
-  Serial.println(" A");
+  Serial.println(" A, Tegangan: ");
   Serial.print(avgvol);
-  Serial.println(" V");
+  Serial.println(" V, Daya: ");
   Serial.print(power);
   Serial.println(" W");
 
