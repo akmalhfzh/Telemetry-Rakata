@@ -81,7 +81,7 @@ void setup() {
   }
 
   // Write header to file
-  dataFile.println("Waktu, Suhu (C), Arus (A), Tegangan (V)");
+  dataFile.println("Waktu, Suhu (C), Arus (A), Tegangan (V), Power (W)");
 
   // Close file
   dataFile.close();
@@ -106,7 +106,7 @@ void loop() {
   steinhart += 1.0 / (nominalTemperature + 273.15); // + (1/To)
   steinhart = 1.0 / steinhart;                 // Invert
   steinhart -= 273.15;                         // Konversi dari Kelvin ke Celsius
-  float avgtemp = avgTemp.reading(steinhart);
+  float avgtemp = avgTemp.reading(steinhart)-14; // kalibrasi
   
   // Baca nilai arus
   rawvoltage = analogRead(VIN);
