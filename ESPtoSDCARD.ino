@@ -17,13 +17,12 @@ const float resistorValue = 10000.0; // Nilai resistor (10k)
 const float nominalResistance = 10000.0; // Nilai resistansi pada suhu tertentu (biasanya 25°C)
 const float nominalTemperature = 25.0; // Suhu nominal dalam derajat Celsius
 const float betaCoefficient = 3950; // Koefisien Beta dari termistor
+movingAvg avgTemp(10);
 
 const float VCC = 5.0; 
 const int model = 0;    // enter the model (see below)
 float rawvoltage;
 movingAvg avgCurr(10);  
-movingAvg avgTemp(10);
-movingAvg avgVol(10);
 float cutOffLimit = 1.00; // reading cutt off current. 1.00 is 1 Ampere
 
 // Floats for ADC voltage & Input voltage
@@ -34,6 +33,7 @@ float R1 = 45000.0;
 float R2 = 5000.0; 
 // Integer for ADC value
 int adc_value = 0;
+movingAvg avgVol(10);
 
 
 float sensitivity[] = {
